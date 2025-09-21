@@ -1,0 +1,110 @@
+/* ภาพรวม */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(30, 30, 30);
+}
+
+/* Navbar */
+.navbar {
+    position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 62px;
+  background-color: #2e2e2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  gap: 1.5rem;
+  box-shadow: rgb(255, 255, 255)
+}
+
+.navbar a {
+   display: flex;
+   align-items: center;   /* แนวตั้ง */
+  justify-content: center; /* แนวนอน */
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.navbar a:hover {
+    background-color: #575757;
+}
+
+.navbar a.active {
+    background-color: #04AA6D;
+}
+
+/* Container หลัก */
+.container {
+    display: flex;
+    gap: 20px;
+    padding-right: 100px;
+    height: calc(100vh - 60px); /* ทำให้ container มีความสูงแน่นอน */
+    box-sizing: border-box;
+}
+
+.info-panel {
+    
+    width: 320px;
+    height: 480px;
+    overflow-y: auto;
+    background-color: #373737;
+    box-shadow: #ebe7e7;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+
+#map {
+    
+    height: 500px;
+    flex: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+
+
+/* ตาราง */
+table {
+    width: 30%;
+    border-collapse: collapse;
+    margin: 5px auto;
+    
+}
+
+th, td {
+    border: 1px solid #bdbdbd;
+    padding: 10px;
+    text-align: center;
+    color: #ebe7e7;
+}
+
+th {
+    background-color: #121212;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #6e6e6e;
+}
+
+tr:hover {
+    background-color: #9d521c;
+    
+}
+.icon-img {
+  width: 62%;
+  height: auto;
+    max-width: 50px; /* กำหนดขนาดสูงสุดของภาพ */
+    object-fit: contain;
+}

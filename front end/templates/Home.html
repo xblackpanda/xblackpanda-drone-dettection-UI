@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="/style/Home.css"/>
+  <title>Drone Radar</title>
+</head>
+<body>
+  
+<div class="navbar">
+    <a href="#" title="Home">
+    <img src="/photo/home.png" alt="Home" class="icon-img" />
+  </a>
+  <a href="#" title="Record">
+    <img src="/photo/button.png" alt="Record" class="icon-img" />
+  </a>
+  <a href="#" title="Radar">
+    <img src="/photo/image_processing20210616-28548-sva647.png" alt="Radar" class="icon-img" />
+  </a>
+  <a href="#" title="Settings">
+    <img src="/photo/setting (1).png" alt="Settings" class="icon-img" />
+  </a>
+  </div>
+  <div class="container">
+    <!-- ตาราง -->
+    <div class="info-panel">
+      <table>
+        <thead>
+          <tr>
+            <th>Drone ID</th>
+            <th>Time</th>
+            <th>Coordinates MGRS</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- จะถูกเติมด้วย JS -->
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- แผนที่ -->
+    <div id="map"></div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Script เรียก API + อัปเดตแผนที่/ตาราง -->
+  <script>
+    const map = L.map('map').setView([13.7563, 100.5018], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Icon
+    const blueIcon = L.icon({
+      iconUrl: '/photo/png-transparent-drone-icon-removebg-preview.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
+    });
+
+    const redIcon = L.icon({
+      iconUrl: '/photo/png-transparent-dronered-icon-removebg-preview.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
+    });
+
+    // เก็บ Marker ของแต่ละ drone
+    const drones = {};
+
+    // ฟังก์ชันอัปเดต UI จากข้อมูลที่ได้จาก Back-End
+    function updateUI(droneData) {
+      const tbody = document.querySelector("table tbody");
+      tbody.innerHTML = "";
+
+      droneData.forEach(drone => {
+        // อัปเดตตาราง
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${drone.id}</td>
+          <td>${drone.time}</td>
+          <td>${drone.mgrs}</td>
+          <td>${drone.status}</td>
+        `;
+        tbody.appendChild(row);
+
+        // อัปเดต Marker
+        const icon = drone.status === "Active" ? blueIcon : redIcon;
+
+        if (drones[drone.id]) {
+          // มี marker แล้ว → อัปเดต
+          drones[drone.id].setLatLng(drone.coords)
+            .setIcon(icon)
+            .setPopupContent(`Drone ${drone.id}<br>Status: ${drone.status}`);
+        } else {
+          // ยังไม่มี → สร้างใหม่
+          drones[drone.id] = L.marker(drone.coords, { icon })
+            .addTo(map)
+            .bindPopup(`Drone ${drone.id}<br>Status: ${drone.status}`);
+        }
+      });
+    }
+
+    // ฟังก์ชันเรียก API จาก Back-End
+    function fetchFromBackend() {
+      fetch('/api/drones') // ← เปลี่ยนเป็น URL ที่ Backend คุณให้มา
+        .then(res => res.json())
+        .then(data => {
+          updateUI(data);
+        })
+        .catch(err => {
+          console.error("Error drone data:", err);
+        });
+    }
+
+    // เรียกทุก 1 วินาที
+    setInterval(fetchFromBackend, 1000);
+
+    // แก้ปัญหา map ขนาดผิดเวลาโหลด
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+  </script>
+</body>
+</html>
